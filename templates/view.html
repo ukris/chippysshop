@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block body %}
+	{% if admin %}
+	<div id="edit_menu">
+    	<p>
+    	{% if not data.price %}
+    	<a href="/edit?item=page&id={{ data.key.id }}" >Edit</a> | <a href="/edit?item=page&id={{ data.key.id }}&action=delete" >Delete</a>
+    	{% else %} 
+    	<a href="/edit?item=product&id={{ data.key.id }}" >Edit</a> | <a href="/edit?item=product&id={{ data.key.id }}&action=delete" >Delete</a>
+    	| <a href="/upload/file/{{ data.key }}" >Upload New File</a>
+    	| <a href="/upload/image/{{ data.key }}" >Upload New Image</a>		
+		{% endif %}
+		</p>
+    </div>
+    {% endif %}
+    {% if data.price %}{% comment %}for products{% endcomment %}
+    	<div class="floatLeft"><div id="product-title">{{ data.title }}</div></div>
+    	<div class="floatRight">
+			<div id="sharebox">
+				<!-- AddThis Button BEGIN -->
+				<a class="addthis_button" href="http://www.addthis.com/bookmark.php?v=250&amp;pub=xa-4af43a431b977ecc"><img src="http://s7.addthis.com/static/btn/sm-share-en.gif" width="83" height="16" alt="Bookmark and Share" style="border:0"/></a><script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pub=xa-4af43a431b977ecc"></script>
+				<!-- AddThis Button END -->
+			</div>
+		</div>
+		<div style="clear: both;"></div>
+		<hr>
+   		<div class="floatLeft">
+			<div>
+		   		{% if image_files %}
+			    	{% for image in image_files %}
+			    		<img src="/files/free/{{ image.key.id }}" />
+				    	{% if admin %}
+				    		<a href="/edit?action=delete&item=file&id={{ image.key.id }}" >Delete</a>
+				    	{% endif %}
+				    {% endfor %} 
+			    {% else %}
+			    <img src="/images/default_product_image.jpg" /> 	
+			    {% endif %}
+		    </div>
+		</div>
+		<div class="floatLeft">
+			<div id="purchase-info">
+		    	<ul>
+		    	{% if data.tags %}<li><b>{{ tag_name }}:</b>
+		    	<ul class="horizontal-list">{% for tag in data.tags %}<li><a href="/tags/{{ tag }}">{{ tag }}</a>{% if not forloop.last %},{% endif %}</li>{% endfor %}</ul>
+		    	</li>{% endif %}
+				<li><b>Type:</b> Download Online</li>
+				<li><b>Price:</b> <span id="product-price">${{ data.price|floatformat:2 }}</span></li>
+				<li><b>Access Time:</b> {{ purchase_days }} days</li>
+				<li><b>Available Format(s):</b> {% if file_types %}{{ file_types }}{% else %}{% for file in pay_files %}{{ file.file_type|upper }} {% endfor %}{% endif %}</li>
+				<li><b>Free Sample(s):</b> {% for file in free_files %}<a href="/files/free/{{ file.key.id }}/{{ data.title|slugify }}" target="_blank" ><img class="middle" src="/images/{{ file.file_type }}_icon_small.gif" /></a> {% endfor %}</li>
+				</ul>
+			</div>
+		</div>
+		<hr class="space">
+		<div class="productcontentbox">
+		{% if data.text %}{{ data.text|safe }}{% endif %}
+		</div>
+    {% else %}{% comment %}for pages{% endcomment %}
+		{% if data.text %}<div>{{ data.text|safe }}</div>{% endif %}
+    {% endif %}
+	<hr class="space">
+	{% if data.price %}{% comment %}Don't print file box for pages or other content{% endcomment %}
+	{% if admin or is_product_purchased %}
+	<div class="contentboxtop">
+		Files
+	</div>
+	<div class="contentbox">
+		{% comment %}admin lists all files instead of just pay files{% endcomment %}
+      	{% if admin %}
+      	<table>
+	      	{% for file in all_files %}
+			<tr>
+				<td><a href="/files/{{ file.content_type }}/{{ file.key.id }}/{{ data.title|slugify }}" >{{ data.title }}.{{ file.file_type }}</a></td>		
+				<td>{{ file.created_date|date:"M d Y g:i a" }}</td>
+				<td>{{ file.content_type }}</td>
+				<td><a href="/edit?action=delete&item=file&id={{ file.key.id }}" >Delete File</a></td>
+	      	</tr>
+	      	{% endfor %}
+      	</table>
+      	{% endif %}
+		{% if is_product_purchased %}
+		<table>	
+			{% for file in pay_files %}
+			<tr>
+				<td><img class="middle" src="/images/{{ file.file_type }}_icon_small.gif" /></td>
+				<td><a href="/files/pay/{{ file.key.id }}/{{ data.title|slugify }}" target="_blank" >{{ data.title }}.{{ file.file_type }}</a></td>	
+	      	</tr>
+	      	{% endfor %}
+      	</table>
+      	{% endif %}
+    </div>
+    {% endif %}
+    {% endif %}
+    <hr class="space">
+    <hr class="space">
+{% endblock %}
+{% block sidebar %}
+	{% if is_product_purchased or admin %}
+		{% if pay_files %}
+		<div class="sidebox" align="center">
+		<div class="sideboxtop">Download Files</div>
+			<div id="main">
+			<font class="small">(Right click and choose "Save Link As..." to download)</font>
+			{% if not admin %}
+			<div><font class="small">Purchased until {{ is_product_purchased|date:"M d Y g:i a" }}</font></div>
+			{% endif %}
+			<div>{% for file in pay_files %}
+			<a href="/files/pay/{{ file.key.id }}/{{ data.title|slugify }}" ><img class="middle" src="/images/{{ file.file_type }}_icon_small.gif" /></a>
+			{% endfor %}</div>
+			</div>
+		</div>
+		{% endif %}
+	{% endif %}
+	{% if data.price and not is_product_purchased %}
+	<div class="sidebox" align="center">
+		{% if data.available and pay_files %}
+		<div class="sideboxtop">Ready to Buy?</div>
+		<hr class="space">
+		<form method="POST" action="/user/cart" enctype='multipart/form-data'> 
+		<input type='hidden' name='action' value='add'>
+		<input type='hidden' name='product_key' value='{{ data.key }}'>
+		<input type="submit" value="Add to Cart"/>
+		</form>
+		{% else %}
+		<hr class="space">
+		<p><b>This product is currently not available.</b></p>
+		{% endif %}
+	</div>
+	{% endif %}
+{% endblock %}

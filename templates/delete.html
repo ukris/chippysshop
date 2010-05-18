@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block body %}
+	{% if errors %}
+		<ul class="errorlist">{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul>
+	{% else %}
+	<p class="notice">Delete?</p>
+	{% endif %}
+	{% if not delete_built_data %}
+	<div><b>Title:</b> {{ data.title }}</div>
+	{% else %}
+	{{ data|safe }}
+	{% endif %}
+	<hr class="space">
+	{% if not errors %}
+	<form method="POST" action="{{ post_url }}">
+	<input type="submit" value="Delete"/>
+	</form>
+	<hr class="space">
+	{% endif %}
+{% endblock %}

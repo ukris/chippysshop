@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% block body %}
+	<div>
+		<a href="/edit?item=product&action=new" >New Product</a> |
+		<a href="/edit?item=page&action=new" >New Page</a> |
+		<a href="/edit?item=purchase&action=new" >New Purchase</a> |
+		<a href="/edit?item=user&action=new" >New User</a> |
+		<a href="/admin/flush_memcache" >Clear Memcache</a>
+	</div>
+	<div>
+		<a href="/admin/home?item=pages" >Pages</a> | 
+		<a href="/admin/home?item=products" >Products</a> | 
+		<a href="/admin/home?item=purchases" >Purchases</a> | 
+		<a href="/admin/home?item=sessions" >Sessions</a> |
+		<a href="/admin/home?item=users" >Users</a>
+	</div>
+	<hr class="space">
+	{% if notice %}
+	<p class="notice">{{ notice }}</p>
+	{% endif %}
+	{% if products %}
+	<div class="floatLeft">
+		<h3>Products</h3>
+	</div>
+	<div class="floatRight">
+		<form name="gotosort">Sort by&nbsp
+		<select name="sortby" OnChange="location.href=gotosort.sortby.options[selectedIndex].value">
+		<option selected>Please select...</option>
+		<option value="/admin/home?item=products&sort=title">A-Z</option>
+		<option value="/admin/home?item=products&sort=title_reverse">Z-A</option>
+		<option value="/admin/home?item=products&sort=views">Least Popular</option>
+		<option value="/admin/home?item=products&sort=views_reverse">Most Popular</option>
+		</select>
+		</form>
+	</div>
+	<table>
+	<thead>
+	<tr>
+		<th>Title</th>
+		<th>Views</th>
+		<th>Tags</th>
+		<th>Active?</th>
+		<th>Available?</th>
+		<th></th>
+		<th></th>
+	<tr>
+	</thead>	
+	{% for product in products %}
+	<tr {% cycle '' 'class="even"' %}>
+		<td><a href="/products/{{ product.key.id }}/{{ product.title|slugify }}">{{ product.title }}</a></td>
+		<td>{{ product.views }}</td>
+      	<td><ul class="horizontal-list">{% for tag in product.tags %}<li><a href="/tags/{{ tag }}">{{ tag }}</a>{% if not forloop.last %},{% endif %}</li>{% endfor %}</ul></td>
+      	<td>{{ product.active }}</td>
+      	<td>{{ product.available }}</td>
+      	<td><a href="/edit?item=product&id={{ product.key.id }}" >Edit</a></td>
+      	<td><a href="/edit?action=delete&item=product&id={{ product.key.id }}" >Delete</a></td>
+	</tr>
+	{% endfor %}
+	</table>
+	{% endif %}
+	{% if pages %}
+	<h3>Pages</h3>
+	<table>
+		<thead>
+		<tr>
+			<th>Title</th>
+			<th>Created Date</th>
+			<th></th>
+			<th></th>
+		</tr>
+		</thead>
+	{% for page in pages %}
+		<tr {% cycle '' 'class="even"' %}>
+	      	<td><a href="/{{ page.url }}">{{ page.title }}</a></td>
+	      	<td>{{ page.created_date|date:"M d Y" }}</td>
+	      	<td><a href="/edit?item=page&id={{ page.key.id }}" >Edit</a></td>
+	      	<td><a href="/edit?action=delete&item=page&id={{ page.key.id }}" >Delete</a></td>
+		</tr>
+	{% endfor %}
+	</table>
+	{% endif %}
+	{% if purchases %}
+	<h3>Purchases</h3>
+	<table>
+	<thead>
+		<tr>
+			<th>Key Name</th>
+			<th>Email</th>
+			<th>Google Order Number</th>
+			<th>Created Date</th>
+			<th>Charge Date</th>
+			<th></th>
+			<th></th>
+		</tr>
+	</thead>
+	{% for purchase in purchases %}
+		<tr {% cycle '' 'class="even"' %}>
+	      	<td>{{ purchase.key.name }}</td>
+	      	<td>{{ purchase.purchase_email }}</td>
+	      	<td>{{ purchase.google_order_number }}</td>
+	      	<td>{{ purchase.created_date|date:"M d Y g:i a" }}</td>
+	      	<td>{{ purchase.charge_date|date:"M d Y g:i a" }}</td>
+      		<td><a href="/edit?item=purchase&id={{ purchase.key.name }}" >Edit</a></td>
+      		<td><a href="/edit?action=delete&item=purchase&id={{ purchase.key.name }}" >Delete</a></td>
+		</tr>
+		{% if purchase.errors %}
+		<tr>
+			<td>{{ purchase.errors }}</td>
+		</tr>
+		{% endif %}
+	{% endfor %}
+	</table>
+	{% endif %}
+	{% if sessions %}
+	<h3>Sessions</h3>
+	<table>
+	<thead>
+		<tr>
+			<th>Expiration Date</th>
+			<th>Key Name</th>
+			
+		</tr>
+	</thead>
+	{% for session in sessions %}
+		<tr {% cycle '' 'class="even"' %}>
+	      	<td>{{ session.expiration_date|date:"M d Y g:i a" }}</td>
+	      	<td>{{ session.key.name }}</td>
+		</tr>
+	{% endfor %}
+	</table>
+	{% endif %}
+	{% if users %}
+	<h3>Users</h3>
+	<table>
+	<thead>	
+		<tr>
+			<th>Email</th>
+			<th>Created Date</th>
+			<th>Purchase Access</th>
+			<th>Key</th>
+			<th></th>
+			<th></th>
+		</tr>
+	</thead>
+	{% for user in users %}
+		<tr {% cycle '' 'class="even"' %}>
+	      	<td>{{ user.email }}</td>
+	      	<td>{{ user.created_date|date:"M d Y g:i a" }}</td>
+	      	<td>{{ user.purchase_access }}</td>
+	      	<td>{{ user.key.name }}</td>
+			<td><a href="/edit?item=user&id={{ user.key.name }}">Edit</a></td>
+			<td><a href="/edit?action=delete&item=user&id={{ user.key.name }}">Delete</a></td>
+		</tr>
+	{% endfor %}
+	</table>
+	{% endif %}
+	{% if not pages and not products and not purchases and not sessions and not users %}
+	<p>No items to display.</p>
+	{% endif %}
+	<p>
+	{% if next_url %}
+      <a href="{{ next_url }}">Next</a>&nbsp    
+    {% endif %}
+    {% if back_url %}
+      <a href="{{ back_url }}">Back</a>       
+    {% endif %}
+    </p>
+    <hr class="space">
+	<hr class="space">
+	<hr class="space">
+	<hr class="space">
+	<hr class="space">
+	<hr class="space">
+{% endblock %}

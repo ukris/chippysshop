@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block body %}
+	{% if products %}
+		{% if not search %}
+		<div class="floatRight">
+			<form name="gotosort">Sort by&nbsp
+			<select name="sortby" OnChange="location.href=gotosort.sortby.options[selectedIndex].value">
+			<option selected>Please select...</option>
+			<option value="?sort=title">A-Z</option>
+			<option value="?sort=title_reverse">Z-A</option>
+			<option value="?sort=views_reverse">Most Popular</option>
+			</select>
+			</form>
+		</div>
+		{% endif %}
+	<div style="clear: both;"></div>	
+	<table>
+	<thead>
+	<tr>
+		<th>Product Title</th>
+		<th>{{ tag_name }}</th>
+	<tr>
+	</thead>
+	{% for product in products %}
+	{% if product.active %}
+	<tr {% cycle '' 'class="even"' %}>
+		<td><a href="/products/{{ product.key.id }}/{{ product.title|slugify }}" >{{ product.title }}</a></td>
+		<td><ul class="horizontal-list">{% for tag in product.tags %}<li><a href="/tags/{{ tag }}">{{ tag }}</a>{% if not forloop.last %},{% endif %}</li>{% endfor %}</ul></td>
+    </tr>
+    {% endif %}
+	{% endfor %}
+	</table>	
+	{% else %}
+		<div>
+		No items found.
+		</div>
+	{% endif %}
+	<hr class="space">
+	{% if pages %}
+	<table>
+	<thead>
+	<tr>
+		<th>Page Title</th>
+	<tr>
+	</thead>
+	{% for page in pages %}
+	<tr {% cycle '' 'class="even"' %}>
+      	<td><a href="/{{ page.title }}" >{{ page.title }}</a></td>
+    </tr>
+	{% endfor %}
+	</table>
+	{% endif %}
+	{% if next_url or back_url %}<p>
+	{% if next_url %}
+      <a href="{{ next_url }}">Next</a>&nbsp    
+    {% endif %}
+    {% if back_url %}
+      <a href="{{ back_url }}">Back</a>       
+    {% endif %}
+    </p>{% endif %}
+	<hr class="space">
+{% endblock %}

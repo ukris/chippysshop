@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+{% block head %}
+	{% if data.text %}
+	<!-- Combo-handled YUI CSS files: -->
+	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?2.8.0r4/build/assets/skins/sam/skin.css">
+	<!-- Combo-handled YUI JS files: -->
+	<script type="text/javascript" src="http://yui.yahooapis.com/combo?2.8.0r4/build/yahoo-dom-event/yahoo-dom-event.js&2.8.0r4/build/animation/animation-min.js&2.8.0r4/build/datasource/datasource-min.js&2.8.0r4/build/autocomplete/autocomplete-min.js&2.8.0r4/build/element/element-min.js&2.8.0r4/build/container/container-min.js&2.8.0r4/build/menu/menu-min.js&2.8.0r4/build/button/button-min.js&2.8.0r4/build/editor/editor-min.js"></script>
+	<style>
+		/* for YUI RTE */
+	    .yui-skin-sam .yui-toolbar-container .yui-toolbar-editcode span.yui-toolbar-icon {
+	        background-image: url( /images/html_editor.gif );
+	        background-position: 0 1px;
+	        left: 5px;
+	    }
+	    .yui-skin-sam .yui-toolbar-container .yui-button-editcode-selected span.yui-toolbar-icon {
+	        background-image: url( /images/html_editor.gif );
+	        background-position: 0 1px;
+	        left: 5px;
+	    }
+	    .editor-hidden {
+	        visibility: hidden;
+	        top: -9999px;
+	        left: -9999px;
+	        position: absolute;
+	    }
+	    textarea {
+	        border: 0;
+	        margin: 0;
+	        padding: 0;
+	    }
+	    /* for YUI autocomplete */
+	    #myAutoComplete {
+		    width:20em; /* set width here or else widget will expand to fit its container */
+		    padding-bottom:4em; /* allow enough real estate for the container */
+		}
+		.yui-skin-sam .yui-ac-content { /* set scrolling */
+		    max-height:18em;overflow:auto;overflow-x:hidden; /* set scrolling */
+		    _height:18em; /* ie6 */
+		}
+	</style>	
+	{% endif %}
+{% endblock %}
+{% block body %}
+	<div class="contentboxtop">
+		<div class="floatleft">
+			{{ page_title }}
+		</div>
+	</div>
+	{% if errors %}
+		{% for error in errors %}<p class="error">{{ error }}</p>{% endfor %}
+	{% endif %}
+	<div class="contentbox yui-skin-sam">
+		<form method="POST" id="product-form" action="{{ post_url }}">
+			{% for field in data %}
+			        <div class="fieldWrapper">
+			            <div>{{ field.errors }}</div>
+			            <div>{{ field.label_tag }}:</div> 
+			            <div>{{ field }}</div>
+			            <hr class="space"/>
+			        </div>
+   			{% endfor %}
+   			{% if data.price %}
+   				<div class="fieldWrapper">
+   					<div><label for="id_tags">Tags:</label><br/>Use a comma to separate tags and hyphen between spaces of individual tags (max 5 tags). Must include at least one tag.</div>
+		            <div id="myAutoComplete">
+						<input id="id_tags" size="75" type="text" name="tags" maxlength="65" value="{{ tags_as_string }}" />
+						<div id="myContainer"></div>
+					</div>
+		            <hr class="space"/>
+		        </div>
+		        <script type="text/javascript">
+		        DisplayTags = function() {
+		            // Use a LocalDataSource
+		            var tags = {{ json_tags|safe }}
+		            var oDS = new YAHOO.util.LocalDataSource(tags);
+		            
+		            // Optional to define fields for single-dimensional array
+		            oDS.responseSchema = {fields : ["tag"]};
+
+		            // Instantiate the AutoComplete
+		            var oAC = new YAHOO.widget.AutoComplete("id_tags", "myContainer", oDS);
+		            oAC.minQueryLength = 0; // Can be 0, which will return all results
+		            oAC.maxResultsDisplayed = 100; // Show more results, scrolling is enabled via CSS
+		            oAC.delimChar = [",",";"]; // Enable comma and semi-colon delimiters
+		            oAC.autoHighlight = false; // Auto-highlighting interferes with adding new tags
+		            oAC.sendQuery("");
+		            
+		            // Populate list to start a new interaction
+		            oAC.itemSelectEvent.subscribe(function(sType, aArgs) {
+		                oAC.sendQuery("");
+		            });
+		            
+		            return {
+		                oDS: oDS,
+		                oAC: oAC
+		            };
+		        }();
+		        </script>
+			{% endif %}
+			{% if data.text %}
+   				<script type="text/javascript"> 				
+   				(function() {
+   				    var Dom = YAHOO.util.Dom,
+   				        Event = YAHOO.util.Event;
+   				    
+   				    var myConfig = {
+   				        //handleSubmit: true,
+   				        animate: true,
+   				        dompath: true,
+   				        focusAtStart: true
+   				    };
+
+   				    var state = 'off';
+   				    YAHOO.log('Set state to off..', 'info', 'example');
+
+   				    YAHOO.log('Create the Editor..', 'info', 'example');
+   				    var myEditor = new YAHOO.widget.Editor('id_text', myConfig);
+   				    myEditor.on('toolbarLoaded', function() {
+   				        var codeConfig = {
+   				            type: 'push', label: 'Edit HTML Code', value: 'editcode'
+   				        };
+   				        YAHOO.log('Create the (editcode) Button', 'info', 'example');
+   				        this.toolbar.addButtonToGroup(codeConfig, 'insertitem');
+   				        
+   				        this.toolbar.on('editcodeClick', function() {
+   				            var ta = this.get('element'),
+   				                iframe = this.get('iframe').get('element');
+
+   				            if (state == 'on') {
+   				                state = 'off';
+   				                this.toolbar.set('disabled', false);
+   				                YAHOO.log('Show the Editor', 'info', 'example');
+   				                YAHOO.log('Inject the HTML from the textarea into the editor', 'info', 'example');
+   				                this.setEditorHTML(ta.value);
+   				                if (!this.browser.ie) {
+   				                    this._setDesignMode('on');
+   				                }
+
+   				                Dom.removeClass(iframe, 'editor-hidden');
+   				                Dom.addClass(ta, 'editor-hidden');
+   				                this.show();
+   				                this._focusWindow();
+   				            } else {
+   				                state = 'on';
+   				                YAHOO.log('Show the Code Editor', 'info', 'example');
+   				                this.cleanHTML();
+   				                YAHOO.log('Save the Editors HTML', 'info', 'example');
+   				                Dom.addClass(iframe, 'editor-hidden');
+   				                Dom.removeClass(ta, 'editor-hidden');
+   				                this.toolbar.set('disabled', true);
+   				                this.toolbar.getButtonByValue('editcode').set('disabled', false);
+   				                this.toolbar.selectButton('editcode');
+   				                this.dompath.innerHTML = 'Editing HTML Code';
+   				                this.hide();
+   				            }
+   				            return false;
+   				        }, this, true);
+
+   				        this.on('cleanHTML', function(ev) {
+   				            YAHOO.log('cleanHTML callback fired..', 'info', 'example');
+   				            this.get('element').value = ev.html;
+   				        }, this, true);
+   				        
+   				        this.on('afterRender', function() {
+   				            var wrapper = this.get('editor_wrapper');
+   				            wrapper.appendChild(this.get('element'));
+   				            this.setStyle('width', '100%');
+   				            this.setStyle('height', '100%');
+   				            this.setStyle('visibility', '');
+   				            this.setStyle('top', '');
+   				            this.setStyle('left', '');
+   				            this.setStyle('position', '');
+
+   				            this.addClass('editor-hidden');
+   				        }, this, true);
+   				    }, myEditor, true);
+   				    myEditor.render();
+					YAHOO.util.Event.on('product-form', 'submit', function(e) {
+						if (state == 'on'){
+							var ta = myEditor.get('element'), iframe = myEditor.get('iframe').get('element');
+			           		YAHOO.log('Inject the HTML from the textarea into the editor', 'info', 'example');
+			           		myEditor.setEditorHTML(ta.value);
+						}
+						myEditor.saveHTML();
+	 				});
+   				})();
+   				
+				</script>
+   			{% endif %}
+			{% comment %}
+		 	custom processing for purchase editing
+		 	{% endcomment %}
+		 	{% if products or default_products %}
+		 	<p></p><b>Purchased Products:</b>
+		 	<table>
+		 		<tr>
+		 			<thead>
+		 			<th></th>
+		 			<th>Title</th>
+			 		<th>Tags</th>
+		 			</thead>
+		 		</tr>	
+		 	{% for product in default_products %}
+		 		<tr>
+		 			<td><input type='checkbox' name='product_ids' value='{{ product.key.id }}' checked="checked" /></td>
+		 			<td>{{ product.title }}</td>
+			 		<td><ul class="horizontal-list">{% for tag in product.tags %}<li><a href="/tags/{{ tag }}">{{ tag }}</a>{% if not forloop.last %},{% endif %}</li>{% endfor %}</ul></td>
+		 		</tr>
+		 	{% endfor %}
+		 	{% for product in products %}
+		 		<tr>
+		 			<td><input type='checkbox' name='product_ids' value='{{ product.key.id }}' /></td>
+		 			<td>{{ product.title }}</td>
+			 		<td><ul class="horizontal-list">{% for tag in product.tags %}<li><a href="/tags/{{ tag }}">{{ tag }}</a>{% if not forloop.last %},{% endif %}</li>{% endfor %}</ul></td>
+		 		</tr>
+		 	{% endfor %}
+		 	</table>
+		 	</p>
+		 	{% endif %}
+			<input type="submit" value="Submit" />
+		</form>
+		<hr class="space">
+	</div>
+	<hr class="space">
+	<hr class="space">
+{% endblock %}

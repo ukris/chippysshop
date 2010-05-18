@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block head %}
+<script type="text/javascript">
+function removeItem(item_key)
+	{
+	document.getElementById("action").value = "remove";
+	document.getElementById("remove_key").value = item_key;
+	document.getElementById("cart_form").submit();
+	}
+</script>
+{% endblock %}
+{% block body %}
+	{% if errors %}
+		{% for error in errors %}<p class="error">{{ error }}</p>{% endfor %}
+	{% endif %}
+	{% if notices %}
+		{% for notice in notices %}<p class="notice">{{ notice }}</p>{% endfor %}
+	{% endif %}
+	<h3>Shopping Cart</h3>
+	{% if products %}
+		<form id="cart_form" method="POST" action="/user/cart" enctype='multipart/form-data'>
+			<table>
+				<tr>
+					<thead>
+					<th></th>
+					<th>Item</th>
+					<th>Description</th>
+					<th>Quantity</th>
+					<th>Price</th>
+					<th>Subtotal</th>
+				</tr>
+				{% for product in products %}
+				<tr class="even">
+					<td>
+						<a href="#" onclick="removeItem('{{ product.key }}')"><img src="/stylesheets/blueprint/plugins/buttons/icons/cross.png" name="remove" alt="Remove" title="Remove" border="0"></a>
+					</td>
+					<input type='hidden' name='item_key' value='{{ product.key }}'/>
+					<td><a href="/products/{{ product.key.id }}/{{ product.title|slugify }}">{{ product.title }}</a></td>
+					<td class="small">{{ product.description }}</td>
+					<td><input type='text' size='2' name='quantity' value='{{ product.quantity }}'/></td>
+					<td>${{ product.price|floatformat:2 }}</td>
+					<td>${{ product.price|floatformat:2 }}</td>
+				</tr>
+		      	{% endfor %}
+		      	<tr align="right">
+		      		<th></th>
+		      		<th></th>
+		      		<th></th>
+		      		<th></th>
+		      		<th>Order Subtotal</th>
+		      		<th>${{ total_price|floatformat:2 }}</th>
+		      		</thead>
+		      	</tr>
+		    </table>
+		<input type='hidden' id='action' name='action' value='update'/> 
+		<input type='hidden' id='remove_key' name='remove_key' value=''/>
+		<div class="floatLeft">
+			<p><input type="submit" value="Update Cart"/>&nbsp&nbsp&nbsp<a href="/" >Continue Shopping</a></p>
+		</div>
+		</form>
+		<div class="floatRight">
+			<div>
+				<a href="/user/checkout" ><img src="https://checkout.google.com/buttons/checkout.gif?merchant_id={{ merchant_id }}&w=180&h=46&style=white&variant=text&loc=en_US" border="0" alt="Home"/></a></td>
+			</div> 
+			<div>
+				{% if merchant_id %} 	
+			  	<font color="#555555" face="Arial" size="1"> 	
+			  	<A HREF="javascript:void(window.open(' https://checkout.google.com/seller/what_is_google_checkout.html','whatischeckout','scrollbars=0,resizable=1,directories=0,height=250,width=400'));" OnMouseOver="return window.status = 'What is Google Checkout?'" OnMouseOut="return window.status = ''">What is Google Checkout?</A></font>
+				{% endif %}
+			</div>
+		</div>
+	{% endif %}
+	{% if not products %} 
+	<p>Your cart is currently empty.</p>
+	<p>Click <a href="/" >here</a> to continue shopping.</p>
+	{% endif %}
+	<hr class="space">
+	<h6>Guarantee</h6><p>We offer a 100% money-back guarantee on all our purchases. See our <a href="/about" >about</a> page for more information.</td></p>
+	<h6>Security</h6><p>This website does not retain any of your credit card information or any personal information other than your email address.
+	The entire transaction process is handled by Google Checkout's secure servers.</p>
+	<h6>Purchase Delivery</h6><p>After you complete your purchase, a passcode will be emailed to you.
+	Simply return to the website and enter your key on the "My Purchased Products" page. Once you enter
+	the correct key, you will be able to download your forms. If you logged in through your
+	Google Account, you will not need the passcode and can simply login to access your forms.</p>	
+	<hr class="space">
+	<hr class="space">
+{% endblock %}

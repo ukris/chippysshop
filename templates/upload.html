@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block body %}
+	<div class="contentboxtop">Upload</div>
+	<div class="contentbox">
+		<form method="POST" action="{{ post_url }}" enctype='multipart/form-data'> 		  
+	    <p>File size must be less than 1 MB.</p>
+	    {% if file %}	
+		<p>File Type: <select name="file_type" id="file_type">
+				<option value="pdf">pdf</option>
+				<option value="doc">MS Word</option>
+				<option value="rtf">Rich Text Format</option>
+		</select>
+        {% endif %}
+        {% if image %}
+        <select name="file_type" id="file_type">
+				<option value="gif">gif</option>
+				<option value="jpg">jpeg</option>
+				<option value="png">png</option>
+		</select>
+        {% endif %}
+        Is this free content: <select name="content_type" id="content_type">
+				<option value="free">Free Content</option>
+				<option value="pay">Pay Content</option>
+				{% if file %}<option value="image">Product Image</option>{% endif %}
+		</select>
+	    File: <input type='file' name='data'></p>
+	    <input type="submit" value="Upload"/>
+		</form>
+	</div>	  
+	<hr class="space">
+	<hr class="space">
+	<hr class="space">
+{% endblock %}
+

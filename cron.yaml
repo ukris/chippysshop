@@ -1,0 +1,13 @@
+cron:
+- description: daily database cleanup - old Purchases, PurchaseItems
+  url: /maintenance/daily3
+  schedule: every day 02:00
+
+- description: daily database cleanup - old Sessions, Carts, CartItems, RecentEmails
+  url: /maintenance/daily2
+  schedule: every day 01:00
+
+- description: daily page view update - Products
+  url: /maintenance/daily
+  schedule: every day 00:00
+

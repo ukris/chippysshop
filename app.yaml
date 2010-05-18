@@ -1,0 +1,36 @@
+application: mychippyshop
+version: beta-1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /stylesheets
+  static_dir: stylesheets
+  
+- url: /images
+  static_dir: images
+  
+- url: /favicon.ico
+  static_files: images/favicon.ico
+  upload: images/favicon.ico
+  
+- url: /google_checkout/listener/.*
+  script: main.py
+  secure: always
+
+- url: /maintenance/.*
+  script: main.py
+  login: admin
+  
+- url: /stats.*
+  script: $PYTHON_LIB/google/appengine/ext/appstats/ui.py
+
+- url: /.*
+  script: main.py
+
+admin_console:
+ pages:
+ - name: Appstats
+   url: /stats
+
+  

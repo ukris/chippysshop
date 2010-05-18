@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block body %}
+	{% if notices %}
+		<ul class="successlist">{% for notice in notices %}<li>{{ notice }}</li>{% endfor %}</ul>
+	{% endif %}
+	{% if not products %}
+		<h3>Purchases</h3>
+		<p>You have no purchased products. </p>
+		<hr class="space">
+	{% endif %}
+	{% if products %}
+		<h3>Purchases</h3>
+		<table>
+		<thead>
+		<tr>
+			<th>Title</th>
+			<th>{{ tag_name }}</th>
+			{% if not admin %}<th>Purchased Until</th>{% endif %}
+			<th>Files</th>
+		<tr>
+		</thead>
+			{% for product in products %}
+			<tr {% cycle '' 'class="even"' %}>
+		      	<td><a href="/products/{{ product.key.id }}/{{ product.title|slugify }}" >{{ product.title }}</a></a></td>
+		      	<td><ul class="horizontal-list">{% for tag in product.tags %}<li><a href="/tags/{{ tag }}">{{ tag }}</a>{% if not forloop.last %},{% endif %}</li>{% endfor %}</ul></td>
+					{% if product.expiration_date or admin %}
+						{% if not admin %}<td>{{ product.expiration_date|date:"M d Y g:i a" }}</td>{% endif %}
+						<td>
+						{% for file in product.pay_files %}<a href="/files/pay/{{ file.key.id }}/{{ product.title|slugify }}" target="_blank" ><img class="middle" src="/images/{{ file.file_type }}_icon_small.gif" /></a>&nbsp;&nbsp;{% endfor %}	
+					{% else %}
+						<td>Purchase Expired</td>
+						<td></td>
+					{% endif %}
+				</td>
+			</tr>
+			{% endfor %}
+		</table>
+		{% if next_url or back_url %}<p>
+		{% if next_url %}
+	      <a href="{{ next_url }}">Next</a>&nbsp    
+	    {% endif %}
+	    {% if back_url %}
+	      <a href="{{ back_url }}">Back</a>       
+	    {% endif %}
+	    </p>{% endif %}	
+	{% endif %}	
+	{% if errors %}
+		<ul class="errorlist">{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul>
+	{% endif %}
+	<hr class="space">
+	<div class="span-10">
+		<div class="contentboxtop">Add Account</div>
+		<div class="contentbox">
+		<form method="POST" action="/user/home" enctype='multipart/form-data'> 
+			<p>Enter your purchase key that was emailed to you for access: 
+			<input type='text' name='key' size="40">
+			<input type="submit" value="Submit"/></p>
+		</form>
+		</div>
+	</div>
+	<div class="span-1"></div>
+	<div class="span-10 last">
+		<div class="contentboxtop">Reminder Email</div>
+		<div class="contentbox">
+		<form method="POST" action="/user/reminder" enctype='multipart/form-data'> 
+			<p>Enter your email address to have your user key emailed to you:
+			<input type='text' name='email' size="40">
+			<input type="submit" value="Submit"/></p>
+		</form>
+		</div>
+	</div>
+	<hr class="space">
+	<hr class="space">
+	<hr class="space">
+{% endblock %}
+
