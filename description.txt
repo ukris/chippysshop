@@ -9,7 +9,7 @@ This is my first Python project, so the code can use a cleanup. I'm planning on 
 Contact me at jasonlapoint@gmail.com if you're interested in contributing to this project.
 
 ===Settings.py===
-Settings.py is potentially the only Python file that needs to be edited. You will need to add your Google Checkout merchant ID to the settings file. 
+Settings.example.py is potentially the only Python file that needs to be edited. You will need to change the name of the file to settings.py.
 
 ===Your First Page===
 You will need login as an App Engine admin user to create a page titled "home" for the homepage. Otherwise users will get an error message when accessing your default page.
