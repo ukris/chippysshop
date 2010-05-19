@@ -4,13 +4,6 @@ import datetime
 import settings
 import models
 
-EMAIL_CLOSING ="""
-
-
-------------------------------------------------------
-This email address was given to us by you or by one of our customers. If you
-feel that you have received this email in error, please send an email to %s.""" % (settings.SITE_EMAIL)
-
 def mail_user_purchase(email, purchase_key):
     "Mail user the purchase key"
     body = """Your purchased forms are now available at %s. To access your forms visit %s/user/home?key=%s.  
@@ -22,7 +15,7 @@ Please email %s if you have any questions.
                   Regards,
                   
                   The %s Team""" % (settings.SITE_NAME, settings.SITE_URL, purchase_key, purchase_key, settings.SITE_EMAIL, settings.SITE_NAME)
-    body = body + EMAIL_CLOSING
+    body = body + settings.EMAIL_CLOSING
     subject = 'Access to ' + settings.SITE_NAME
     mail_user(email, body, subject)
     return
@@ -46,7 +39,7 @@ Please email %s if you have any questions.
                   Regards,
                   
                   The %s Team""" % (settings.SITE_NAME, settings.SITE_URL, purchase_keys, settings.SITE_EMAIL, settings.SITE_NAME)
-    body = body + EMAIL_CLOSING
+    body = body + settings.EMAIL_CLOSING
     subject = 'Access to ' + settings.SITE_NAME
     mail_user(email, body, subject)
     recent_reminder = models.RecentReminder(user=user)

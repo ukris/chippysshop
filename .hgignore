@@ -1,6 +1,5 @@
 # use glob syntax.
 syntax: glob
 
-.hgignore
 settings.py
 *.pyc
