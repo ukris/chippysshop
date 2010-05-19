@@ -28,7 +28,7 @@
 			<div>
 		   		{% if image_files %}
 			    	{% for image in image_files %}
-			    		<img src="/files/free/{{ image.key.id }}" />
+			    		<img src="/files/free/{{ image.key.id }}/{{ data.title }}.{{ image.file_type }}" />
 				    	{% if admin %}
 				    		<a href="/edit?action=delete&item=file&id={{ image.key.id }}" >Delete</a>
 				    	{% endif %}
@@ -74,10 +74,11 @@
 				<td><a href="/files/{{ file.content_type }}/{{ file.key.id }}/{{ data.title|slugify }}" >{{ data.title }}.{{ file.file_type }}</a></td>		
 				<td>{{ file.created_date|date:"M d Y g:i a" }}</td>
 				<td>{{ file.content_type }}</td>
-				<td><a href="/edit?action=delete&item=file&id={{ file.key.id }}" >Delete File</a></td>
+				<td><a href="/edit?action=delete&item=file&id={{ file.key.id }}" >Delete</a></td>
 	      	</tr>
 	      	{% endfor %}
       	</table>
+      	<a href="/upload/file/{{ data.key }}" >Upload New File</a> | <a href="/upload/image/{{ data.key }}" >Upload New Image</a>
       	{% endif %}
 		{% if is_product_purchased %}
 		<table>	
