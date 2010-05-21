@@ -257,7 +257,7 @@ hr.space {background:#fff;color:#fff;visibility:hidden;}
 .clear {clear:both;}
 
 /* CSS Chippy Shop */
-html,body {background: #62B1D0;}
+html,body {background: #FFFFFF;}
 img.middle {vertical-align:middle}
 .content {background: #FFFFFF;}
 #top {background: #FFFFFF;}
@@ -280,7 +280,7 @@ input[type=text] {margin:3px 0;}
 		#navbar-menu li ul li a {background: #79ADD5; width: auto;}
 		#navbar-menu li ul li a:hover {background: #E5ECF9;color: black;}
 #edit_menu {}
-#footer {text-align: center;background: #62B1D0;}
+#footer {background: #E5ECF9;border: 3px solid #62B1D0;text-align: center;}
 #product-title {font-size: 1.5em;height: 25px;text-align: left;}
 #product-price {color: #990000;font-size: 1.3em;font-weight: bold;}
 #purchase-info {padding-left: 20px;}
@@ -288,13 +288,13 @@ input[type=text] {margin:3px 0;}
 #purchase-info li {list-style-type: none;}
 /* for tags within purchase-info */
 #purchase-info ul ul {font-family: Arial, Helvetica, sans-serif;font-size: .90em;}
-.popularproducts {border-bottom:1px dotted #0776A0;padding-bottom: 6px;padding-top: 6px;}
-.popularproducts ul {font-family: Arial, Helvetica, sans-serif;font-size: .90em;color: #000000;margin: 0px;padding: 0px;}
-.popularproducts li {list-style-type: none;}
+.popular-products {padding-bottom: 6px;padding-left: 6px;padding-top: 6px;}
+.popular-products ul {font-family: Arial, Helvetica, sans-serif;font-size: .90em;color: #000000;margin: 0px;padding: 0px;}
+.popular-products li {list-style-type: none;}
 #search {padding-left: 500px;}
 #sharebox {padding-top: 5px;}
-.sidebox {background: #E5ECF9;border: 3px solid #79ADD5;margin-bottom:1.5em;padding-bottom:1.5em;padding-left:1.5em;padding-right:1.5em;}
-.sideboxtop {background: #E5ECF9;border-bottom:1px dotted #0776A0;font-weight: bold;height: 25px;line-height: 25px;text-align: center;}
+.sidebox {background: #E5ECF9;border: 3px solid #62B1D0;margin-bottom:1.5em;padding-bottom:1.5em;}
+.sideboxtop {color: #333;font-size: 1.4em;height: 25px;line-height: 25px;text-align: center;}
 /* textarea for forms */
 textarea {width:800px;height:350px;padding:5px;}
 /* for form table in product text */
@@ -305,7 +305,7 @@ table.prettytable caption {margin-left: inherit;margin-right: inherit;}
 ul.horizontal-list {color: #000000;display: inline;margin: 0px;padding: 0px;}
 ul.horizontal-list li {display: inline;list-style-type: none;padding-left: 5px;}
 ul.horizontal-list li a {color: #000000;}
-#notice {background: #FFFF66;border: 3px solid #7A7A28;color: #000;padding-left: 30px;padding-right: 30px;text-align: center;}
+#notice {background: #FFFF66;border: 3px solid #7A7A28;color: #000;padding-left: 20px;padding-right: 20px;text-align: center;}
 /* Django error formatting to match all other errors */
 .errorlist {padding:.8em;margin-bottom:1em;border:2px solid #ddd;}
 .errorlist {background:#FBE3E4;color:#8a1f11;border-color:#FBC2C4;}

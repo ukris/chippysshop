@@ -399,10 +399,11 @@ class SearchHandler(BaseRequestHandler):
         except: 
             self.generate_error(404)
             return
-        self.generate('templates/list.html', { 
+        self.generate('templates/list.html', {
                                               model_name : data,
                                               'page_title' : 'Search - ' + model_name,
                                               'search' : True,
+                                              'search_string' : search_string, 
                                               })
         
 class PageHandler(BaseRequestHandler):

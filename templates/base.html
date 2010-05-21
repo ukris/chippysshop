@@ -74,7 +74,7 @@
 		    {% endif %}
 		</ul>
 		<div id="search">
-		<input type="text" name="q" size="40" value="{{ query|escape }}">
+		<input type="text" name="q" size="40" value="{{ search_string }}">
 		<input type="submit" value="Product Search">
 		</div>
 	</div>
@@ -94,7 +94,7 @@
 					<div class="sidebox">
 						<div class="sideboxtop">Popular Products</div>
 						{% for product in popular_products %}
-						<div class="popularproducts">
+						<div class="popular-products" {% cycle '' 'class="even"' %}>
 							<ul>	
 								<li><a href="/products/{{ product.key.id }}/{{ product.title|slugify }}">{{ product.title }}</a></li> 
 								<li>Price: ${{ product.price|floatformat:2 }}</li>
@@ -114,6 +114,9 @@
 			</div>
 		{% endif %}
 	</div>
+	<hr class="space">
+ 	<div class="span-1 last"></div>
+ 	<hr class="space">
  	<div class="span-24 last" id="footer">
 		<div>Copyright 2009 Jason LaPoint. All Rights Reserved.</div>
 		<div><a href="/about" >About</a> | <a href="/contact" >Contact</a> | <a href="/disclaimer" >Disclaimer</a></div>
