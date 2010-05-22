@@ -37,6 +37,7 @@ application = webapp.WSGIApplication([
                                       ('/tags/(.*)', views.TagHandler),
                                       ('/upload/(.*)/(.*)', views.UploadHandler),
                                       ('/files/free/(.*)/.*', views.FreeFileHandler),
+                                      ('/files/image/(.*)/.*', views.FreeFileHandler),
                                       ('/files/pay/(.*)/.*', views.PaidFileHandler),
                                       ('/admin/(.*)', views.AdminHandler),
                                       ('/edit', views.EditHandler),

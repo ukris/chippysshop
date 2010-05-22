@@ -3,7 +3,7 @@ cron:
   url: /maintenance/daily3
   schedule: every day 02:00
 
-- description: daily database cleanup - old Sessions, Carts, CartItems, RecentEmails
+- description: daily database cleanup - old Sessions, RecentEmails
   url: /maintenance/daily2
   schedule: every day 01:00
 

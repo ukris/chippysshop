@@ -14,7 +14,7 @@ handlers:
   static_files: images/favicon.ico
   upload: images/favicon.ico
   
-- url: /google_checkout/listener/.*
+- url: /google_checkout/.*
   script: main.py
   secure: always
 

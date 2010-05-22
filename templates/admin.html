@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block body %}
+	<div id="edit-menu">
 	<div>
 		<a href="/edit?item=product&action=new" >New Product</a> |
 		<a href="/edit?item=page&action=new" >New Page</a> |
@@ -13,6 +14,7 @@
 		<a href="/admin/home?item=purchases" >Purchases</a> | 
 		<a href="/admin/home?item=sessions" >Sessions</a> |
 		<a href="/admin/home?item=users" >Users</a>
+	</div>
 	</div>
 	<hr class="space">
 	{% if notice %}

@@ -262,7 +262,7 @@ img.middle {vertical-align:middle}
 .content {background: #FFFFFF;}
 #top {background: #FFFFFF;}
 #topmenu {padding: 5px 10px;text-align: right;background: #FFFFFF;}
-.floatLeft {float: left;}
+.floatLeft {float: left;padding-left: 2px;}
 .floatRight {float: right;text-align: right;}
 /* to clear blueprint.css input formatting */
 input[type=text] {margin:3px 0;}
@@ -279,7 +279,7 @@ input[type=text] {margin:3px 0;}
 		#navbar-menu li ul li {display: inline;float: none;}
 		#navbar-menu li ul li a {background: #79ADD5; width: auto;}
 		#navbar-menu li ul li a:hover {background: #E5ECF9;color: black;}
-#edit_menu {}
+#edit-menu {background: #F6E3CE;}
 #footer {background: #E5ECF9;border: 3px solid #62B1D0;text-align: center;}
 #product-title {font-size: 1.5em;height: 25px;text-align: left;}
 #product-price {color: #990000;font-size: 1.3em;font-weight: bold;}

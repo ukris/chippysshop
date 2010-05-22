@@ -38,7 +38,18 @@ def split_notification_string(error, separator):
     split_string = error_string.split(separator)
     return split_string
 
-class BaseRequestHandler(webapp.RequestHandler):
+class BaseHandler(webapp.RequestHandler):
+    "BaseRequestHandler and BaseFileHandler both need the generate_error method"
+    def generate_error(self, error_code, template_values={}):
+        self.error(error_code)
+        self.add_template_values()
+        template_values.update(self.template_values)
+        template_values.update({'page_title' : settings.SITE_NAME + ' - Oops' , 'no_sidebar' : True })
+        template_name = 'templates/error.html'
+        path = os.path.join(os.path.dirname(__file__),template_name)
+        self.response.out.write(template.render(path, template_values))
+
+class BaseRequestHandler(BaseHandler):
     def __init__(self):
         self.session = False
         self.user_google = users.get_current_user()
@@ -109,15 +120,6 @@ class BaseRequestHandler(webapp.RequestHandler):
         self.response.headers.add_header("Expires", expires_str)
         path = os.path.join(os.path.dirname(__file__),template_name)
         self.response.out.write(template.render(path, template_values))
-  
-    def generate_error(self, error_code, template_values={}):
-        self.error(error_code)
-        self.add_template_values()
-        template_values.update(self.template_values)
-        template_values.update({'page_title' : settings.SITE_NAME + ' - Oops' , 'no_sidebar' : True })
-        template_name = 'templates/error.html'
-        path = os.path.join(os.path.dirname(__file__),template_name)
-        self.response.out.write(template.render(path, template_values))
 
     def handle_exception(self, *args):
         import sys
@@ -144,7 +146,7 @@ class BaseRequestHandler(webapp.RequestHandler):
         self.template_values.update({ errors_or_notices : notification_list })
         return
     
-class BaseFileHandler(webapp.RequestHandler):
+class BaseFileHandler(BaseHandler):
     def get(self, *args): pass                   
     def post(self, *args): pass
     def file_response_output(self, entity):
@@ -158,13 +160,6 @@ class BaseFileHandler(webapp.RequestHandler):
         file_data_key = models.ProductFile.file.get_value_for_datastore(entity)
         file_data = db.get(file_data_key) #get the actual data
         self.response.out.write(file_data.data)
-
-    def generate_error(self, error_code, template_values={}):
-        self.error(error_code)
-        template_values.update({'page_title' : settings.SITE_NAME + ' - Oops' , 'no_sidebar' : True })
-        template_name = 'templates/error.html'
-        path = os.path.join(os.path.dirname(__file__),template_name)
-        self.response.out.write(template.render(path, template_values))
 
 class AdminHandler(BaseRequestHandler):
     "handler for admin allowing for model views"
@@ -230,9 +225,12 @@ class UploadHandler(BaseRequestHandler):
         if users.is_current_user_admin():   
             if product_key and file_type: #get the product key to send to POST
                 if file_type == 'image' or file_type == 'file':
+                    if file_type == 'file': file_types = settings.FILE_TYPES
+                    else: file_types = settings.IMAGE_TYPES
                     post_url = '/upload/' + str(file_type) + '/' + str(product_key)
                     self.generate('templates/upload.html', {
                                                             file_type : file_type,
+                                                            'file_types' : file_types,
                                                             'no_sidebar' : True,
                                                             'page_title' : 'New ' + str(file_type),
                                                             'post_url' : post_url,
@@ -257,7 +255,9 @@ class UploadHandler(BaseRequestHandler):
                         file.put() #put the actual data
                         product_file = models.ProductFile(file = file, content_type = content_type, file_type = file_type, product = product)
                         product_file.put()
-                    except: print 'upload failed, try again.'
+                    except: 
+                        print 'upload failed, try again.'
+                        return
                     product.files.append(product_file.key()) #add to file key list
                     product.files = product.verify_file_list()
                     product.put()
@@ -438,13 +438,6 @@ class ProductHandler(BaseRequestHandler):
             if not product:
                 self.generate_error(404)
                 return
-            #make sure the product page title is the same as the title in the datastore
-            if not str(product_title) == models.slugify(product.title):
-                self.generate_error(404)
-                return
-            if not product.active and not self.template_values['admin']: #only admin can see non-active
-                self.generate_error(404)
-                return    
             #retrieve files and images so that they can be stored in the memcache too
             all_files = models.ProductFile.get(product.files)
             pay_files = []
@@ -467,6 +460,14 @@ class ProductHandler(BaseRequestHandler):
             
             try: memcache.add(product_id, template_values, namespace='products')
             except: pass
+        else: product = template_values['data']
+        #make sure the product page title is the same as the title in the datastore
+        if not str(product_title) == models.slugify(product.title):
+            self.generate_error(404)
+            return
+        if not product.active and not self.template_values['admin']: #only admin can see non-active
+            self.generate_error(404)
+            return    
         if not self.template_values['admin']: #increase page view counter
             memcache.incr(product_id, namespace='counters', initial_value=0)         
         self.template_values.update(template_values)

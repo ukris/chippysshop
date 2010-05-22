@@ -286,7 +286,7 @@ class ProductFile(db.Model):
     content_type = db.StringProperty(choices=('free', 'pay', 'image')) #images are used for product photos
     file = db.ReferenceProperty(FileData) 
     product = db.ReferenceProperty(Product) #to prevent orphans 
-    file_type = db.StringProperty(choices=(settings.FILE_TYPES))
+    file_type = db.StringProperty(choices=(settings.FILE_TYPES.keys()))
     
     def delete(self, *args, **kwargs):
         self.file.delete() #delete the FileData file

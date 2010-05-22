@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% block body %}
 	{% if admin %}
-	<div id="edit_menu">
+	<div id="edit-menu">
     	<p>
     	{% if not data.price %}
     	<a href="/edit?item=page&id={{ data.key.id }}" >Edit</a> | <a href="/edit?item=page&id={{ data.key.id }}&action=delete" >Delete</a>
     	{% else %} 
     	<a href="/edit?item=product&id={{ data.key.id }}" >Edit</a> | <a href="/edit?item=product&id={{ data.key.id }}&action=delete" >Delete</a>
-    	| <a href="/upload/file/{{ data.key }}" >Upload New File</a>
-    	| <a href="/upload/image/{{ data.key }}" >Upload New Image</a>		
+    	| <a href="/upload/file/{{ data.key }}" >Upload File</a>
+    	| <a href="/upload/image/{{ data.key }}" >Upload Product Image</a>		
 		{% endif %}
 		</p>
     </div>
@@ -28,7 +28,7 @@
 			<div>
 		   		{% if image_files %}
 			    	{% for image in image_files %}
-			    		<img src="/files/free/{{ image.key.id }}/{{ data.title }}.{{ image.file_type }}" />
+			    		<img src="/files/image/{{ image.key.id }}/{{ data.title }}.{{ image.file_type }}" />
 				    	{% if admin %}
 				    		<a href="/edit?action=delete&item=file&id={{ image.key.id }}" >Delete</a>
 				    	{% endif %}
@@ -78,7 +78,7 @@
 	      	</tr>
 	      	{% endfor %}
       	</table>
-      	<a href="/upload/file/{{ data.key }}" >Upload New File</a> | <a href="/upload/image/{{ data.key }}" >Upload New Image</a>
+      	<a href="/upload/file/{{ data.key }}" >Upload File</a> | <a href="/upload/image/{{ data.key }}" >Upload Product Image</a>
       	{% endif %}
 		{% if is_product_purchased %}
 		<table>	
