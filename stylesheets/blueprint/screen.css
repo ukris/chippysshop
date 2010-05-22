@@ -258,7 +258,7 @@ hr.space {background:#fff;color:#fff;visibility:hidden;}
 
 /* CSS Chippy Shop */
 html,body {background: #FFFFFF;}
-img.middle {vertical-align:middle}
+img.middle {vertical-align:middle;}
 .content {background: #FFFFFF;}
 #top {background: #FFFFFF;}
 #topmenu {padding: 5px 10px;text-align: right;background: #FFFFFF;}
@@ -288,9 +288,11 @@ input[type=text] {margin:3px 0;}
 #purchase-info li {list-style-type: none;}
 /* for tags within purchase-info */
 #purchase-info ul ul {font-family: Arial, Helvetica, sans-serif;font-size: .90em;}
-.popular-products {padding-bottom: 6px;padding-left: 6px;padding-top: 6px;}
+.popular-products {padding-top: 7px;clear:both;}
+.popular-products-image {float: left;padding-left: 5px;width: 53px;}
+.popular-products-text {float: left;width: 170px;}
 .popular-products ul {font-family: Arial, Helvetica, sans-serif;font-size: .90em;color: #000000;margin: 0px;padding: 0px;}
-.popular-products li {list-style-type: none;}
+.popular-products li {list-style-type: none;padding-left: 4px;}
 #search {padding-left: 500px;}
 #sharebox {padding-top: 5px;}
 .sidebox {background: #E5ECF9;border: 3px solid #62B1D0;margin-bottom:1.5em;padding-bottom:1.5em;}

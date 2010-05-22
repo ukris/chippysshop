@@ -95,32 +95,28 @@
 						<div class="sideboxtop">Popular Products</div>
 						{% for product in popular_products %}
 						<div class="popular-products">
-							<div class="floatLeft"><a href="/products/{{ product.key.id }}/{{ product.title|slugify }}"><img class="floatLeft middle" src="/images/default_product_icon.png" border="0" alt="Guarantee"/></a></div>
-							<div class="floatLeft">&nbsp;</div>
-							<div class="floatLeft">
+							<div class="popular-products-image"><a href="/products/{{ product.key.id }}/{{ product.title|slugify }}"><img class="middle" src="/images/default_product_icon.png" border="0"/></a></div>
+							<div class="popular-products-text">
 							<ul>
 								<li><a href="/products/{{ product.key.id }}/{{ product.title|slugify }}">{{ product.title }}</a></li> 
 								<li>Price: ${{ product.price|floatformat:2 }}</li>
 								{% if product.tags %}<li>{{ tag_name }}:<ul class="horizontal-list">{% for tag in product.tags %}<li><a href="/tags/{{ tag }}">{{ tag }}</a>{% if not forloop.last %},{% endif %}</li>{% endfor %}</ul></li>{% endif %}
 							</ul>
 							</div>
-							<div style="clear: both;"></div>
 						</div>
 						{% endfor %}
+						<div class="clear"></div>
 					</div>
 					{% if merchant_id %}
 					<div id="googleCheckoutLogo"></div><script src='https://checkout.google.com/buttons/logos?merchant_id={{ merchant_id }}&loc=en_US&f=png' ></script>
 					{% endif %}
 					<hr class="space">
 					<div><img src="http://code.google.com/appengine/images/appengine-noborder-120x30.gif" alt="Powered by Google App Engine" /></div>
-					<hr class="space">
 					{% endif %}
 				</div>
 			</div>
 		{% endif %}
 	</div>
-	<hr class="space">
- 	<div class="span-1 last"></div>
  	<hr class="space">
  	<div class="span-24 last" id="footer">
 		<div>Copyright 2009 Jason LaPoint. All Rights Reserved.</div>
