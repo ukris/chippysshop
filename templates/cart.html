@@ -22,33 +22,33 @@ function removeItem(item_key)
 			<table>
 				<tr>
 					<thead>
-					<th></th>
 					<th>Item</th>
 					<th>Description</th>
 					<th>Quantity</th>
 					<th>Price</th>
 					<th>Subtotal</th>
+					<th></th>
 				</tr>
 				{% for product in products %}
 				<tr class="even">
-					<td>
-						<a href="#" onclick="removeItem('{{ product.key }}')"><img src="/stylesheets/blueprint/plugins/buttons/icons/cross.png" name="remove" alt="Remove" title="Remove" border="0"></a>
-					</td>
 					<input type='hidden' name='item_key' value='{{ product.key }}'/>
 					<td><a href="/products/{{ product.key.id }}/{{ product.title|slugify }}">{{ product.title }}</a></td>
 					<td class="small">{{ product.description }}</td>
 					<td><input type='text' size='2' name='quantity' value='{{ product.quantity }}'/></td>
 					<td>${{ product.price|floatformat:2 }}</td>
 					<td>${{ product.price|floatformat:2 }}</td>
+					<td>
+						<a href="#" onclick="removeItem('{{ product.key }}')"><img src="/images/remove.png" name="remove" alt="Remove" title="Remove" border="0"></a>
+					</td>
 				</tr>
 		      	{% endfor %}
 		      	<tr align="right">
 		      		<th></th>
 		      		<th></th>
 		      		<th></th>
-		      		<th></th>
 		      		<th>Order Subtotal</th>
 		      		<th>${{ total_price|floatformat:2 }}</th>
+		      		<th></th>
 		      		</thead>
 		      	</tr>
 		    </table>
@@ -75,7 +75,7 @@ function removeItem(item_key)
 	<p>Click <a href="/" >here</a> to continue shopping.</p>
 	{% endif %}
 	<hr class="space">
-	<h6><img class="middle" src="/images/guarantee.png" border="0" alt="Guarantee"/>&nbsp;&nbsp;&nbsp;Guarantee</h6><p>We offer a 100% money-back guarantee on all our purchases. See our <a href="/about" >about</a> page for more information.</td></p>
+	<h6><img class="middle" src="/images/guarantee.png" border="0" alt="Guarantee"/>&nbsp;&nbsp;&nbsp;Guarantee</h6><p>We offer a 30 day money-back guarantee on all our purchases. See our <a href="/about" >about</a> page for more information.</td></p>
 	<h6><img class="middle" src="/images/security.png" border="0" alt="Security"/>&nbsp;&nbsp;&nbsp;Security</h6><p>This website does not retain any of your credit card information or any personal information other than your email address.
 	The entire transaction process is handled by Google Checkout's secure servers.</p>
 	<h6><img class="middle" src="/images/delivery.png" border="0" alt="Delivery"/>&nbsp;&nbsp;&nbsp;Purchase Delivery</h6><p>After you complete your purchase, a passcode will be emailed to you.
