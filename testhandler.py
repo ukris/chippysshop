@@ -64,17 +64,22 @@ class TestHandler(webapp.RequestHandler):
                     print '\npurchase.expiration_date: %s' % item.expiration_date
                     print '\npurchase.quantity: %s' % item.quantity  
  
-
-            #elif page_name == 'new_order':
+            elif page_name == 'products':
+                products = models.Product.all().fetch(100)
+                print 'test'
+                for product in products:
+                    print 'product id: %s' % product.key().id()
+                    print 'product title: %s' % product.title
+            elif page_name == 'new_order':
                 #for testing purchases
-                #notification = googlecheckout.parse_google_response(settings.TEST_NEW_ORDER_NOTIFICATION)
+                notification = googlecheckout.parse_google_response(settings.TEST_NEW_ORDER_NOTIFICATION)
                 #notification = self.parse_google_response(settings.ORDER_TEST)
                 #print 'test'
-                #self.manipulate_notification(notification)
-            #elif page_name == 'charge':
+                googlecheckout.manipulate_notification(notification)
+            elif page_name == 'charge':
                 #for testing purchases
-                #notification = googlecheckout.parse_google_response(settings.ORDER_2)
-                #self.manipulate_notification(notification)
+                notification = googlecheckout.parse_google_response(settings.ORDER_2)
+                googlecheckout.manipulate_notification(notification)
             else:
                 self.redirect('/')
             return
