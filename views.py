@@ -39,7 +39,27 @@ def split_notification_string(error, separator):
     return split_string
 
 class BaseHandler(webapp.RequestHandler):
-    "BaseRequestHandler and BaseFileHandler both need the generate_error method"
+    "BaseRequestHandler and BaseFileHandler both need the generate_error and add_template_values methods"
+    def add_template_values(self):
+        "Add user login values and values from settings to template dict"
+        if self.user_google: 
+            url = users.create_logout_url(self.request.uri)
+            url_link_text = 'Google Logout'
+        else: 
+            url = users.create_login_url(self.request.uri)
+            url_link_text = 'Google Login' 
+        
+        values = {
+                  'google_analytics_account' : settings.GOOGLE_ANALYTICS_ACCOUNT,
+                  'merchant_id' : settings.MERCHANT_ID,
+                  'site_name' : settings.SITE_NAME,
+                  'tag_name' : settings.TAG_NAME,
+                  'url': url,
+                  'url_link_text': url_link_text,
+                  }
+        self.template_values.update(values)
+        self.template_values.update({'tag_dict' : self.template_values['tag_dict'].items()})
+        
     def generate_error(self, error_code, template_values={}):
         self.error(error_code)
         self.add_template_values()
@@ -77,25 +97,6 @@ class BaseRequestHandler(BaseHandler):
                 if x in string_list: notification_list.append(x)
             self.update_template_notifications(error_or_notices, notification_list)
         return
-    
-    def add_template_values(self):
-        "Add user login values and values from settings to template dict"
-        if self.user_google: 
-            url = users.create_logout_url(self.request.uri)
-            url_link_text = 'Google Logout'
-        else: 
-            url = users.create_login_url(self.request.uri)
-            url_link_text = 'Google Login' 
-        
-        values = {
-                  'google_analytics_account' : settings.GOOGLE_ANALYTICS_ACCOUNT,
-                  'merchant_id' : settings.MERCHANT_ID,
-                  'site_name' : settings.SITE_NAME,
-                  'tag_name' : settings.TAG_NAME,
-                  'url': url,
-                  'url_link_text': url_link_text,
-                  }
-        self.template_values.update(values)
         
     def generate(self, template_name, template_values):
         "create page with template name and template values"
@@ -105,7 +106,6 @@ class BaseRequestHandler(BaseHandler):
 
         if 'popular_products' not in template_values: 
             template_values.update({ 'popular_products' : models.get_popular_products() })
-        template_values.update({'tag_dict' : self.template_values['tag_dict'].items()})
         
         if self.session is not None:
             if 'number_cart_items' in self.session:
@@ -432,7 +432,7 @@ class PageHandler(BaseRequestHandler):
         
 class ProductHandler(BaseRequestHandler):
     def get(self, product_id, product_title):  
-        template_values = memcache.get(product_id, namespace='products')
+        template_values = memcache.get(str(product_id), namespace='products')
         if not template_values:
             try: product_id = int(product_id)
             except: 
@@ -462,7 +462,7 @@ class ProductHandler(BaseRequestHandler):
                                'purchase_days' : settings.PURCHASE_DAYS, 
                                }
             
-            try: memcache.add(product_id, template_values, namespace='products')
+            try: memcache.add(str(product_id), template_values, namespace='products')
             except: pass
         else: product = template_values['data']
         #make sure the product page title is the same as the title in the datastore
@@ -473,7 +473,8 @@ class ProductHandler(BaseRequestHandler):
             self.generate_error(404)
             return    
         if not self.template_values['admin']: #increase page view counter
-            memcache.incr(product_id, namespace='counters', initial_value=0)         
+            try: memcache.incr(str(product_id), namespace='counters', initial_value=0)         
+            except: pass
         self.template_values.update(template_values)
         if not self.template_values['admin'] and self.session:
             product = self.template_values['data'] #get product to test if purchased
