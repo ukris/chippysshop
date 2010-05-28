@@ -204,15 +204,8 @@ class Product(search.Searchable, db.Model):
     def delete(self, *args, **kwargs):    
         try: memcache.delete(str(self.key().id()), namespace='products')
         except: pass
-        self.delete_cart_items() 
         db.Model.delete(self)
         return 
-        
-    def delete_cart_items(self):
-        cart_items = CartItem.all().filter("product =", self.key()).fetch(1000)
-        delete_list = [ cart_item for cart_item in cart_items ]
-        db.delete(delete_list)
-        return  
         
     def get_tags_as_string(self):
         tags_as_string = Tag.get_tags_as_string(self.tags)
@@ -286,7 +279,7 @@ class ProductFile(db.Model):
     content_type = db.StringProperty(choices=('free', 'pay', 'image')) #images are used for product photos
     file = db.ReferenceProperty(FileData) 
     product = db.ReferenceProperty(Product) #to prevent orphans 
-    file_type = db.StringProperty(choices=(settings.FILE_TYPES.keys()))
+    file_type = db.StringProperty(choices=(settings.FILE_TYPES))
     
     def delete(self, *args, **kwargs):
         self.file.delete() #delete the FileData file
@@ -579,15 +572,9 @@ class Session(db.Model, dict): #the key for each session is the uid
             #check to see if this user is currently in the datastore
             user = User.get_by_key_name(user_id)
             if user: user.delete_sessions() #delete old user sessions
-            if not user:
-                email = user_google.email()
-                user = User.all().filter("email =", email).get()
-                if user: #add missing user_id to the user
-                    user.user_id = user_id
-                    user.put()
             #create new user if one doesn't already exist
             if not user: #generate different key for user
-                user = User(key_name = user_id, user_id = user_id, email = email)
+                user = User(key_name = user_id, user_id = user_id, email = user_google.email())
                 user.put()
             session = Session(key_name = uid, expiration_date = expiration_date, user = user)
             session._add_user_purchased_items(user) # SHOULD ONLY DO THIS FOR NON ADMIN USERS
@@ -635,7 +622,6 @@ class Session(db.Model, dict): #the key for each session is the uid
             except: pass
             return purchased_products
         return None
-
 
     @staticmethod
     def get_session(uid):

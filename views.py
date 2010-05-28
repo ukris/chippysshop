@@ -434,7 +434,11 @@ class ProductHandler(BaseRequestHandler):
     def get(self, product_id, product_title):  
         template_values = memcache.get(product_id, namespace='products')
         if not template_values:
-            product = models.Product.get_by_id(int(product_id))
+            try: product_id = int(product_id)
+            except: 
+                self.generate_error(404)
+                return
+            product = models.Product.get_by_id(product_id)
             if not product:
                 self.generate_error(404)
                 return
