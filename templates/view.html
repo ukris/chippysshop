@@ -28,7 +28,7 @@
 			<div>
 		   		{% if image_files %}
 			    	{% for image in image_files %}
-			    		<img src="/files/image/{{ image.key.id }}/product_image.{{ image.file_type }}"/>
+			    		<img src="/files/image/{{ image.key.id }}/{{ data.title|slugify }}.{{ image.file_type }}"/>
 				    	{% if admin %}
 				    		<a href="/edit?action=delete&item=file&id={{ image.key.id }}" >Delete</a>
 				    	{% endif %}
