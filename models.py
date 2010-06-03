@@ -796,7 +796,7 @@ class Tag(db.Model):
         if not tag_dict:
             tags = Tag.all().order('title').fetch(1000)
             tag_dict = {}
-            for tag in tags: tag_dict.update({ tag.title : tag.title.replace('_', ' ')}) 
+            for tag in tags: tag_dict.update({ tag.title : tag.title.replace('_', ' ')})
             memcache.add('tag_dict', tag_dict)
         return tag_dict
     

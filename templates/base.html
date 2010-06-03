@@ -1,6 +1,7 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html>
   <head>
+  	<meta charset="utf-8">
   	<meta name="title" content="{{ page_title }}" />
   	<meta name="author" content="Jason LaPoint" />
   	<title>{{ site_name }} - {{ page_title }}</title>
@@ -30,16 +31,16 @@
   <div class="container">
     <div class="span-24 last" id="top">
 		<div class="span-12">
-			<a href="/" ><img src="/images/logo.jpg" border="0" alt="Home"/></a>
+			<a href="/" ><img src="/images/logo.jpg" alt="Home"/></a>
 		</div>
 		<div class="span-12 last">
-			<div id="topmenu">
-		  		{% if admin %}<tm><a href="/admin/home" >Admin</a> | </tm>{% endif %}
-		  		<tm><a href="{{ url }}">{{ url_link_text }}</a></tm>
+			<div class="topmenu">
+		  		{% if admin %}<a href="/admin/home" >Admin</a> | {% endif %}
+		  		<a href="{{ url }}">{{ url_link_text }}</a>
 		  		<br /> 
 		  	</div>
-			<div id="topmenu">
-				<a href="/user/cart" ><img class="middle" src="/images/cart.png" border="0" alt="Cart"/></a>
+			<div class="topmenu">
+				<a href="/user/cart" ><img class="middle" src="/images/cart.png" alt="Cart"/></a>
 				<a href="/user/cart" >{% if number_cart_items %}({{ number_cart_items }}){% else %}(0){% endif %} item(s) in cart</a>
 			</div>
 		</div>
@@ -48,16 +49,16 @@
 	<div class="span-24 last" id="navbar">
 		<ul id="navbar-menu">
 			<li><a href="/" >Home</a></li>  
-		 	<li><a href="/tags/" >Products&nbsp;<img class="middle" src="/images/carrot.png" border="0"/></a>
+		 	<li><a href="/tags/" >Products&nbsp;<img class="middle" src="/images/carrot.png"/></a>
 		 		<ul>
 		 			{% for tag_url, tag_name in tag_dict %} 
-		 			<li><a href="/tags/{{ tag_url }}" >{{ tag_name }}</a></li>
+		 			<li><a href="/tags/{{ tag_url }}">{{ tag_name }}</a></li>
 		 			{% endfor %}
 		 		</ul>
 		 	</li>
 		    <li><a href="/user/home" >My Purchased Products</a></li>
 		    {% if admin %}
-		    <li><a href="/admin/home" >Admin&nbsp;<img class="middle" src="/images/carrot.png" border="0"/></a>
+		    <li><a href="/admin/home" >Admin&nbsp;<img class="middle" src="/images/carrot.png"/></a>
 		    	<ul>
 		 			<li><a href="/edit?item=product&action=new" >New Product</a></li>
 					<li><a href="/edit?item=page&action=new" >New Page</a></li>
@@ -95,7 +96,7 @@
 						<div class="sideboxtop">Popular Products</div>
 						{% for product in popular_products %}
 						<div class="popular-products">
-							<div class="popular-products-image"><a href="/products/{{ product.key.id }}/{{ product.title|slugify }}"><img class="middle" src="/images/default_product_icon.png" border="0"/></a></div>
+							<div class="popular-products-image"><a href="/products/{{ product.key.id }}/{{ product.title|slugify }}"><img class="middle" src="/images/default_product_icon.png"/></a></div>
 							<div class="popular-products-text">
 							<ul>
 								<li><a href="/products/{{ product.key.id }}/{{ product.title|slugify }}">{{ product.title }}</a></li> 
@@ -108,7 +109,7 @@
 						<div class="clear"></div>
 					</div>
 					{% if merchant_id %}
-					<div id="googleCheckoutLogo"></div><script src='https://checkout.google.com/buttons/logos?merchant_id={{ merchant_id }}&loc=en_US&f=png' ></script>
+					<div id="googleCheckoutLogo"></div><script src='https://checkout.google.com/buttons/logos?merchant_id={{ merchant_id }}&amp;loc=en_US&amp;f=png' ></script>
 					{% endif %}
 					<hr class="space">
 					<div><img src="http://code.google.com/appengine/images/appengine-noborder-120x30.gif" alt="Powered by Google App Engine" /></div>

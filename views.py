@@ -27,9 +27,7 @@ def create_error_query_string(errors):
 
 def get_tag_list(tag_dict):
     "Convert tag dict to a list."
-    tag_list = []
-    for tag in tag_dict.keys(): tag_list.append(tag)
-    return tag_list  
+    return tag_dict.keys()
 
 def split_notification_string(error, separator):
     "split a string using the given separator"

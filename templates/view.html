@@ -28,13 +28,13 @@
 			<div>
 		   		{% if image_files %}
 			    	{% for image in image_files %}
-			    		<img src="/files/image/{{ image.key.id }}/{{ data.title }}.{{ image.file_type }}" />
+			    		<img src="/files/image/{{ image.key.id }}/product_image.{{ image.file_type }}"/>
 				    	{% if admin %}
 				    		<a href="/edit?action=delete&item=file&id={{ image.key.id }}" >Delete</a>
 				    	{% endif %}
 				    {% endfor %} 
 			    {% else %}
-			    <img src="/images/default_product_image.jpg" /> 	
+			    <img src="/images/default_product_image.jpg"/> 	
 			    {% endif %}
 		    </div>
 		</div>
@@ -99,9 +99,9 @@
 {% block sidebar %}
 	{% if is_product_purchased or admin %}
 		{% if pay_files %}
-		<div class="sidebox" align="center">
+		<div class="sidebox">
 		<div class="sideboxtop">Download Files</div>
-			<div id="main">
+			<div class="download">
 			<font class="small">(Right click and choose "Save Link As..." to download)</font>
 			{% if not admin %}
 			<div><font class="small">Purchased until {{ is_product_purchased|date:"M d Y g:i a" }}</font></div>
@@ -114,7 +114,7 @@
 		{% endif %}
 	{% endif %}
 	{% if data.price and not is_product_purchased %}
-	<div class="sidebox" align="center">
+	<div class="download sidebox">
 		{% if data.available and pay_files %}
 		<div class="sideboxtop">Ready to Buy?</div>
 		<hr class="space">

@@ -61,7 +61,7 @@
    			{% endfor %}
    			{% if data.price %}
    				<div class="fieldWrapper">
-   					<div><label for="id_tags">Tags:</label><br/>Use a comma to separate tags and hyphen between spaces of individual tags (max 5 tags). Must include at least one tag.</div>
+   					<div><label for="id_tags">Tags:</label><br/>Use a comma to separate tags and hyphen between spaces of individual tags (max 5 tags). Must include at least one tag. Underscores will be converted to blank spaces when displayed in html.</div>
 		            <div id="myAutoComplete">
 						<input id="id_tags" size="75" type="text" name="tags" maxlength="65" value="{{ tags_as_string }}" />
 						<div id="myContainer"></div>
