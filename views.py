@@ -40,6 +40,8 @@ class BaseHandler(webapp.RequestHandler):
     "BaseRequestHandler and BaseFileHandler both need the generate_error and add_template_values methods"
     def add_template_values(self):
         "Add user login values and values from settings to template dict"
+        try: self.user_google #no user_google for FreeFileHandler
+        except: self.user_google = None     
         if self.user_google: 
             url = users.create_logout_url(self.request.uri)
             url_link_text = 'Google Logout'
@@ -55,8 +57,11 @@ class BaseHandler(webapp.RequestHandler):
                   'url': url,
                   'url_link_text': url_link_text,
                   }
-        self.template_values.update(values)
-        self.template_values.update({'tag_dict' : self.template_values['tag_dict'].items()})
+        try: # NO TEMPLATE VALUES for FreeFileHandler
+            self.template_values.update(values)
+            self.template_values.update({'tag_dict' : self.template_values['tag_dict'].items()})
+        except: self.template_values = values
+        
         
     def generate_error(self, error_code, template_values={}):
         self.error(error_code)
@@ -226,7 +231,7 @@ class UploadHandler(BaseRequestHandler):
                     if file_type == 'file': file_types = settings.FILE_TYPES
                     else: file_types = settings.IMAGE_TYPES
                     post_url = '/upload/' + str(file_type) + '/' + str(product_key)
-                    self.generate('templates/upload.html', {
+                    self.generate('templates/uploadnonxhr.html', {
                                                             file_type : file_type,
                                                             'file_types' : file_types,
                                                             'no_sidebar' : True,
@@ -242,8 +247,7 @@ class UploadHandler(BaseRequestHandler):
         if users.is_current_user_admin():
             product = models.Product.get(product_key)
             if product:
-                #collect file data
-                data = self.request.POST.get('data').file.read()
+                data = self.request.POST.get('data').file.read() #collect file data
                 #if file data exists add it to the product
                 if data:
                     file_type = self.request.get('file_type')
@@ -259,7 +263,14 @@ class UploadHandler(BaseRequestHandler):
                     product.files.append(product_file.key()) #add to file key list
                     product.files = product.verify_file_list()
                     product.put()
-                    self.redirect('/products/%s/%s' % (product.key().id(), models.slugify(product.title)))
+                    if self.request.get('xhr'):   
+                        self.generate('templates/upload.html', {
+                                                                'product' : product,
+                                                                'product_file' : product_file,
+                                                                })
+                    else: 
+                        self.redirect('/products/%s/%s' % (product.key().id(), models.slugify(product.title)))
+                    return
                 else: print 'No file uploaded'
             else: print 'No product found'
         else: self.generate_error(403)
@@ -478,6 +489,7 @@ class ProductHandler(BaseRequestHandler):
             product = self.template_values['data'] #get product to test if purchased
             is_product_purchased = self.session.is_product_purchased(product.key())
             self.template_values.update({ 'is_product_purchased' : is_product_purchased })
+        else: self.template_values.update({ 'file_types_dict' : settings.FILE_TYPES }) #for upload in admin view
         self.generate('templates/view.html', {})
                 
 class TagHandler(BaseRequestHandler):
@@ -607,13 +619,17 @@ class EditHandler(BaseRequestHandler):
                     if model == 'user':
                         data = self.build_delete_data(entity, model)
                         self.template_values.update({ 'delete_built_data' : True })
-                    elif model == 'file': #delete file through GET method, delete product memcache as well
+                    elif model == 'file': #delete file through GET method
                         product = models.Product.all().filter('files =', entity.key()).get()
                         product.files.remove(entity.key())
                         product.put()
-                        redirect_url = self.build_redirect_url(product, 'product')
+                        entity_id = entity.key().id()
                         entity.delete()
-                        self.redirect(redirect_url)
+                        if self.request.get('xhr'):
+                            self.response.out.write(str(entity_id))
+                        else:
+                            redirect_url = self.build_redirect_url(product, 'product')
+                            self.redirect(redirect_url)
                         return
                     elif model == 'product': 
                         self.check_for_notifications('errors', ['product_purchased']) 
@@ -712,3 +728,8 @@ class EditHandler(BaseRequestHandler):
             else:
                 template = 'templates/edit.html'
                 self.generate_edit_form(data, model, page_title, post_url, template, entity=entity)
+
+class RedirectHandler(webapp.RequestHandler):
+    "Redirect all index.php requests for home page"
+    def get(self):
+        self.redirect('/', permanent=True)

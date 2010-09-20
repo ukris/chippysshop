@@ -1,30 +1,8 @@
-{% extends "base.html" %}
-{% block body %}
-	<div class="contentboxtop">Upload</div>
-	<div class="contentbox">
-		<form method="POST" action="{{ post_url }}" enctype='multipart/form-data'> 		  
-	    <p>File size must be less than 1 MB.</p>
-		<p>File Type: 
-		<select name="file_type" id="file_type">
-				{% for key, value in file_types.items %}
-				<option value="{{ key }}">{{ value }}</option>
-				{% endfor %}
-		</select>
-        &nbsp;&nbsp;&nbsp;&nbsp;Is this free content: 
-        <select name="content_type" id="content_type">
-				{% if image %}
-				<option value="image">Product Image</option>
-				{% else %}
-				<option value="free">Free Content</option>
-				<option value="pay">Pay Content</option>
-				{% endif %}
-		</select>
-	    &nbsp;&nbsp;&nbsp;&nbsp;File: <input type='file' name='data'></p>
-	    <input type="submit" value="Upload"/>
-		</form>
-	</div>	  
-	<hr class="space">
-	<hr class="space">
-	<hr class="space">
-{% endblock %}
-
+<response>
+	<title>{{ product.title }}</title>
+	<title-slugify>{{ product.title|slugify }}</title-slugify>
+	<file-type>{{ product_file.file_type }}</file-type>
+	<id>{{ product_file.key.id }}</id>
+	<created-date>{{ product_file.created_date|date:"M d Y g:i a" }}</created-date>
+	<content-type>{{ product_file.content_type }}</content-type>
+</response>

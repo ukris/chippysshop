@@ -1,6 +1,94 @@
 {% extends "base.html" %}
+{% block head %}
+{% if admin and data.price %}<script type="text/javascript" src="/js/jquery.form.js"></script>
+{% endif %}
+{% endblock %}
 {% block body %}
-	{% if admin %}
+	{% if admin and data.price %}
+	<script type="text/javascript">
+		// prepare the form when the DOM is ready 
+		$(document).ready(function() { 
+			$('#uploadForm').hide();   // initially hide the upload form
+			$('a#hideForm').hide();   // hide the close link
+
+			//jQuery.fn.delete_file = function() {  HOW TO CREATE A FUNCTION
+			$('a#deleteFile').click(function(){	// send get ajax request when delete link clicked
+				$.ajax({ url: (this.href), data:'xhr=true', success: function(ajax_response){
+			        $('#' + ajax_response).remove();
+			    }});
+				return false;
+				})
+			
+			//  show form when the link is clicked
+			$('a#showForm').click(function(){
+				$('#uploadForm').show();
+				$('a#showForm').hide();
+				$('a#hideForm').show();
+				return false;
+				})
+				
+			//  hide form when the link is clicked
+			$('a#hideForm').click(function(){
+				$('#uploadForm').hide();
+				$('a#hideForm').hide();
+				$('a#showForm').show();
+				return false;
+				})
+			
+		    var options = { 
+		        beforeSubmit:  showRequest,  // pre-submit callback 
+		        success:       showResponse,  // post-submit callback 
+		        resetForm: true,        // reset the form after successful submit
+		        data: { xhr: 'true' },   //add xhr to querystring 
+		        dataType: 'xml', 
+		    }; 
+		 
+		    // bind to the form's submit event 
+		    $('#uploadForm').submit(function() { 
+		        // inside event callbacks 'this' is the DOM element so we first 
+		        // wrap it in a jQuery object and then invoke ajaxSubmit 
+		        $(this).ajaxSubmit(options); 
+		 
+		        // !!! Important !!! 
+		        // always return false to prevent standard browser submit and page navigation 
+		        return false; 
+		    }); 
+		}); 
+		 
+		// pre-submit callback 
+		function showRequest(formData, jqForm, options) { 
+		    // formData is an array; here we use $.param to convert it to a string to display it 
+		    // but the form plugin does this for you automatically when it submits the data 
+		    var queryString = $.param(formData); 
+		 
+		    // jqForm is a jQuery object encapsulating the form element.  To access the 
+		    // DOM element for the form do this: 
+		    // var formElement = jqForm[0]; 
+		    // alert('About to submit: \n\n' + queryString); 
+		 
+		    // here we could return false to prevent the form from being submitted; 
+		    // returning anything other than false will allow the form submit to continue 
+		    return true; 
+		} 
+		 
+		// post-submit callback 
+		function showResponse(responseText, statusText, xhr, $form)  { 
+			//responseTextEdit = responseText.slice(10, (responseText.length - 11)) //remove textarea box
+		    alert('status: ' + statusText + '\n\nresponseText: \n' + responseText + 
+		        '\n\nThe output div should have already been updated with the responseText.' +
+		        '\n\n');
+			// process XML response
+			var title = $(responseText).find('title').text();
+			var title_slugify = $(responseText).find('title-slugify').text();
+			var file_id = $(responseText).find('id').text();
+			var file_type = $(responseText).find('file-type').text();
+			var created_date = $(responseText).find('created-date').text();
+			var content_type = $(responseText).find('content-type').text();
+			var title_link = '<a href="/files/' + content_type + '/' + file_id + '/' + title_slugify + '" >' + title + '.' + file_type + '</a>'; 
+			var delete_link = '<a href="/edit?action=delete&item=file&id=' + file_id + '" id="deleteFile" >Delete</a>';
+		    $('#filesTable tbody').append('<tr id="' + file_id + '"><td>' + title_link + '</td><td>' + created_date + '</td><td>' + content_type + '</td><td>' + delete_link + '</td></tr>');
+		}  
+    </script>
 	<div id="edit-menu">
     	<p>
     	{% if not data.price %}
@@ -28,13 +116,13 @@
 			<div>
 		   		{% if image_files %}
 			    	{% for image in image_files %}
-			    		<img src="/files/image/{{ image.key.id }}/{{ data.title|slugify }}.{{ image.file_type }}"/>
+			    		<img src="/files/image/{{ image.key.id }}/{{ data.title|slugify }}.{{ image.file_type }}" />
 				    	{% if admin %}
 				    		<a href="/edit?action=delete&item=file&id={{ image.key.id }}" >Delete</a>
 				    	{% endif %}
 				    {% endfor %} 
 			    {% else %}
-			    <img src="/images/default_product_image.jpg"/> 	
+			    <img src="/images/default_product_image.jpg" /> 	
 			    {% endif %}
 		    </div>
 		</div>
@@ -68,17 +156,37 @@
 	<div class="contentbox">
 		{% comment %}admin lists all files instead of just pay files{% endcomment %}
       	{% if admin %}
-      	<table>
+      	<table id="filesTable">
+     		<tbody>
 	      	{% for file in all_files %}
-			<tr>
+			<tr id="{{ file.key.id }}">
 				<td><a href="/files/{{ file.content_type }}/{{ file.key.id }}/{{ data.title|slugify }}" >{{ data.title }}.{{ file.file_type }}</a></td>		
 				<td>{{ file.created_date|date:"M d Y g:i a" }}</td>
 				<td>{{ file.content_type }}</td>
-				<td><a href="/edit?action=delete&item=file&id={{ file.key.id }}" >Delete</a></td>
+				<td><a href="/edit?action=delete&item=file&id={{ file.key.id }}" id="deleteFile" >Delete</a></td>
 	      	</tr>
 	      	{% endfor %}
+	      	</tbody>
       	</table>
-      	<a href="/upload/file/{{ data.key }}" >Upload File</a> | <a href="/upload/image/{{ data.key }}" >Upload Product Image</a>
+      	<p><a href="#" id="showForm">Upload File</a><a href="#" id="hideForm">Close</a></p>
+      	<form id="uploadForm" action="/upload/xhr/{{ data.key }}" method="post"> 
+		    <p>File size must be less than 1 MB.</p>
+			<p>File Type: 
+			<select name="file_type" id="file_type">
+					{% for key, value in file_types_dict.items %}
+					<option value="{{ key }}">{{ value }}</option>
+					{% endfor %}
+			</select>
+	        &nbsp;&nbsp;&nbsp;&nbsp;Is this free content: 
+	        <select name="content_type" id="content_type">
+					<option value="image">Product Image</option>
+					<option value="free">Free Content</option>
+					<option value="pay">Pay Content</option>
+			</select>
+		    <br>
+		    File: <input type='file' name='data'></p>
+		    <input type="submit" value="Upload"/> 
+		</form>
       	{% endif %}
 		{% if is_product_purchased %}
 		<table>	
@@ -107,7 +215,7 @@
 			<div><font class="small">Purchased until {{ is_product_purchased|date:"M d Y g:i a" }}</font></div>
 			{% endif %}
 			<div>{% for file in pay_files %}
-			<a href="/files/pay/{{ file.key.id }}/{{ data.title|slugify }}" ><img class="middle" src="/images/{{ file.file_type }}_icon_small.gif" /></a>
+			<a href="/files/pay/{{ file.key.id }}/{{ data.title|slugify }}" target="_blank"><img class="middle" src="/images/{{ file.file_type }}_icon_small.gif"  /></a>
 			{% endfor %}</div>
 			</div>
 		</div>
