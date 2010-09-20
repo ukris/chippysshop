@@ -728,8 +728,3 @@ class EditHandler(BaseRequestHandler):
             else:
                 template = 'templates/edit.html'
                 self.generate_edit_form(data, model, page_title, post_url, template, entity=entity)
-
-class RedirectHandler(webapp.RequestHandler):
-    "Redirect all index.php requests for home page"
-    def get(self):
-        self.redirect('/', permanent=True)
